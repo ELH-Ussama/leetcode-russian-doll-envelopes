@@ -15,15 +15,13 @@ class Envelope:
             children = []
         self.children = children
 
-    def depth(self, matrix: np.ndarray) -> int:
+    def depth(self) -> int:
         if self.computed_depth:
             return self.computed_depth
         if self.children is None or len(self.children) == 0:
             self.computed_depth = 1
             return self.computed_depth
-        children_ids = [child.id for child in self.children]
-        root_children = [child for child in self.children if not matrix[children_ids, child.id].any()]
-        children_depths = [child.depth(matrix) for child in root_children]
+        children_depths = [child.depth() for child in self.children]
         self.computed_depth = 1 + max(children_depths)
         return self.computed_depth
 
@@ -85,9 +83,7 @@ class Solution:
         self.init_matrix(unique_envelopes)
         self.compute_envelopes_tree_dependencies()
 
-        root_envelopes = [j for j in range(len(self.matrix)) if not self.matrix[:, j].any()]
-
-        nodes_depths = [self.envelopes[i].depth(self.matrix) for i in root_envelopes]
+        nodes_depths = [self.envelopes[i].depth() for i in range(len(self.matrix))]
 
         return max(nodes_depths)
 
