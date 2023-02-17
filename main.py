@@ -36,7 +36,7 @@ class Solution:
             can_contain_nodes = [self.envelopes[envelope_id] for envelope_id in can_contain]
             self.envelopes[envelope_id].children = can_contain_nodes
 
-    def init_envelopes(self, envelopes: List[Tuple[int, ...]]) -> None:
+    def init_envelopes(self, envelopes: List[List[int]]) -> None:
         all_envelopes: List[Envelope] = []
 
         for i in range(self.n):
@@ -45,7 +45,7 @@ class Solution:
 
         self.envelopes = all_envelopes
 
-    def init_parent_children_map(self, envelopes: List[Tuple[int, ...]]) -> None:
+    def init_parent_children_map(self, envelopes: List[List[int]]) -> None:
         self.envelopes_children = [[] for _ in range(self.n)]
         for i in range(self.n):
             wi, hi = envelopes[i]
@@ -60,10 +60,9 @@ class Solution:
                     self.envelopes_children[j].append(i)
 
     def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
-        unique_envelopes = list(set(tuple(e) for e in envelopes))
-        self.n = len(unique_envelopes)
-        self.init_envelopes(unique_envelopes)
-        self.init_parent_children_map(unique_envelopes)
+        self.n = len(envelopes)
+        self.init_envelopes(envelopes)
+        self.init_parent_children_map(envelopes)
         self.compute_envelopes_tree_dependencies()
 
         nodes_depths = [self.envelopes[i].depth() for i in range(self.n)]
