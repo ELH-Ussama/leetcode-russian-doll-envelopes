@@ -1,4 +1,5 @@
 from typing import List, Dict
+import numpy as np
 
 
 class Envelope:
@@ -26,37 +27,28 @@ class Envelope:
     def can_contain(self, other: 'Envelope') -> bool:
         return self.width > other.width and self.height > other.height
 
-    def filter_can_contain(self, others: List['Envelope']) -> List['Envelope']:
-        can_contain = []
-
-        for other in others:
-            if self.can_contain(other):
-                can_contain.append(other)
-
-        return can_contain
-
-    def depth(self) -> int:
+    def depth(self, matrix: np.ndarray) -> int:
         if self.computed_depth:
             return self.computed_depth
         if self.children is None or len(self.children) == 0:
             self.computed_depth = 1
             return self.computed_depth
-        root_children = [child for child in self.children if not child.can_fit_in_at_least_one(self.children)]
-        children_depths = [child.depth() for child in root_children]
+        children_ids = [child.id for child in self.children]
+        root_children = [child for child in self.children if not matrix[children_ids, child.id].any()]
+        children_depths = [child.depth(matrix) for child in root_children]
         self.computed_depth = 1 + max(children_depths)
         return self.computed_depth
 
 
 class Solution:
     envelopes: List[Envelope] = None
+    matrix: np.ndarray = None
 
     def get_envelope_can_contain_map(self) -> Dict[int, List[int]]:
         envelope_can_contain_map: Dict[int: List[int]] = {}
 
         for i in range(len(self.envelopes)):
-            envelope = self.envelopes[i]
-            can_be_contained = envelope.filter_can_contain(self.envelopes)
-            ids = [e.id for e in can_be_contained]
+            ids = [j for j in range(len(self.envelopes)) if self.matrix[i, j]]
             envelope_can_contain_map[i] = ids
 
         return envelope_can_contain_map
@@ -78,14 +70,31 @@ class Solution:
             all_envelopes.append(Envelope(i, envelope[0], envelope[1]))
 
         self.envelopes = all_envelopes
-        self.compute_envelopes_tree_dependencies()
+
+    def init_matrix(self):
+        n = len(self.envelopes)
+        matrix = np.zeros((n, n), dtype=bool)
+        for i in range(n):
+            for j in range(n):
+                matrix[i, j] = self.envelopes[i].can_contain(self.envelopes[j])
+        c_matrix = np.copy(matrix)
+        for i in range(n):
+            for j in range(n):
+                i_parent_of_j = matrix[i, j]
+                if i_parent_of_j:
+                    i_children = c_matrix[i]
+                    j_children = matrix[j]
+                    c_matrix[i] = np.logical_and(i_children, np.logical_not(j_children))
+        self.matrix = c_matrix
 
     def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
         self.init_envelopes(envelopes)
+        self.init_matrix()
+        self.compute_envelopes_tree_dependencies()
 
-        root_envelopes = [e.id for e in self.envelopes if not e.can_fit_in_at_least_one(self.envelopes)]
+        root_envelopes = [j for j in range(len(self.matrix)) if not self.matrix[:, j].any()]
 
-        nodes_depths = [self.envelopes[i].depth() for i in root_envelopes]
+        nodes_depths = [self.envelopes[i].depth(self.matrix) for i in root_envelopes]
 
         return max(nodes_depths)
 
