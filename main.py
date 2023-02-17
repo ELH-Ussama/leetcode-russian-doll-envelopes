@@ -69,10 +69,12 @@ class Solution:
             self.envelopes[envelope_id].children = can_contain_nodes
 
     def init_envelopes(self, envelopes: List[List[int]]) -> None:
+        unique_envelopes = list(set(tuple(e) for e in envelopes))
+
         all_envelopes: List[Envelope] = []
 
-        for i in range(len(envelopes)):
-            envelope = envelopes[i]
+        for i in range(len(unique_envelopes)):
+            envelope = unique_envelopes[i]
             all_envelopes.append(Envelope(i, envelope[0], envelope[1]))
 
         self.envelopes = all_envelopes
