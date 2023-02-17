@@ -15,15 +15,6 @@ class Envelope:
             children = []
         self.children = children
 
-    def can_fit_in(self, other: 'Envelope') -> bool:
-        return self.width < other.width and self.height < other.height
-
-    def can_fit_in_at_least_one(self, others: List['Envelope']) -> bool:
-        for other in others:
-            if self.can_fit_in(other):
-                return True
-        return False
-
     def can_contain(self, other: 'Envelope') -> bool:
         return self.width > other.width and self.height > other.height
 
