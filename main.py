@@ -63,20 +63,20 @@ class Solution:
     @staticmethod
     def get_init_matrix(envelopes):
         n = len(envelopes)
-        matrix = np.zeros((n, n), dtype=bool)
+        matrix = [[False for _ in range(n)] for _ in range(n)]
         for i in range(n):
             wi, hi = envelopes[i]
             for j in range(i + 1, n):
                 wj, hj = envelopes[j]
-                matrix[i, j] = wi > wj and hi > hj
-                matrix[j, i] = wj > wi and hj > hi
+                matrix[i][j] = wi > wj and hi > hj
+                matrix[j][i] = wj > wi and hj > hi
+        matrix = np.array(matrix)
+        negated_matrix = np.logical_not(matrix)
         for i in range(n):
+            i_children = matrix[i]
             for j in range(n):
-                i_parent_of_j = matrix[i, j]
-                if i_parent_of_j:
-                    i_children = matrix[i]
-                    j_children = matrix[j]
-                    matrix[i] = np.logical_and(i_children, np.logical_not(j_children))
+                if matrix[i, j]:
+                    matrix[i] = np.logical_and(i_children, negated_matrix[j])
         return matrix
 
     def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
