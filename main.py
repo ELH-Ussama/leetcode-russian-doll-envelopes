@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Tuple
 import numpy as np
 
 
@@ -51,25 +51,22 @@ class Solution:
             can_contain_nodes = [self.envelopes[envelope_id] for envelope_id in can_contain]
             self.envelopes[envelope_id].children = can_contain_nodes
 
-    def init_envelopes(self, envelopes: List[List[int]]) -> None:
-        unique_envelopes = list(set(tuple(e) for e in envelopes))
-
+    def init_envelopes(self, envelopes: List[Tuple[int, ...]]) -> None:
         all_envelopes: List[Envelope] = []
 
-        for i in range(len(unique_envelopes)):
-            envelope = unique_envelopes[i]
+        for i in range(len(envelopes)):
+            envelope = envelopes[i]
             all_envelopes.append(Envelope(i, envelope[0], envelope[1]))
 
         self.envelopes = all_envelopes
 
-    def init_matrix(self, envelopes: List[List[int]]):
-        unique_envelopes = list(set(tuple(e) for e in envelopes))
-        n = len(unique_envelopes)
+    def init_matrix(self, envelopes: List[Tuple[int, ...]]):
+        n = len(envelopes)
         self.matrix = np.zeros((n, n), dtype=bool)
         for i in range(n):
-            wi, hi = unique_envelopes[i]
+            wi, hi = envelopes[i]
             for j in range(i+1, n):
-                wj, hj = unique_envelopes[j]
+                wj, hj = envelopes[j]
                 self.matrix[i, j] = wi > wj and hi > hj
                 self.matrix[j, i] = wj > wi and hj > hi
         for i in range(n):
@@ -81,8 +78,9 @@ class Solution:
                     self.matrix[i] = np.logical_and(i_children, np.logical_not(j_children))
 
     def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
-        self.init_envelopes(envelopes)
-        self.init_matrix(envelopes)
+        unique_envelopes = list(set(tuple(e) for e in envelopes))
+        self.init_envelopes(unique_envelopes)
+        self.init_matrix(unique_envelopes)
         self.compute_envelopes_tree_dependencies()
 
         root_envelopes = [j for j in range(len(self.matrix)) if not self.matrix[:, j].any()]
