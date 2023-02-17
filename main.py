@@ -62,12 +62,16 @@ class Solution:
 
         self.envelopes = all_envelopes
 
-    def init_matrix(self):
-        n = len(self.envelopes)
+    def init_matrix(self, envelopes: List[List[int]]):
+        unique_envelopes = list(set(tuple(e) for e in envelopes))
+        n = len(unique_envelopes)
         self.matrix = np.zeros((n, n), dtype=bool)
         for i in range(n):
-            for j in range(n):
-                self.matrix[i, j] = self.envelopes[i].can_contain(self.envelopes[j])
+            wi, hi = unique_envelopes[i]
+            for j in range(i+1, n):
+                wj, hj = unique_envelopes[j]
+                self.matrix[i, j] = wi > wj and hi > hj
+                self.matrix[j, i] = wj > wi and hj > hi
         for i in range(n):
             for j in range(n):
                 i_parent_of_j = self.matrix[i, j]
@@ -78,7 +82,7 @@ class Solution:
 
     def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
         self.init_envelopes(envelopes)
-        self.init_matrix()
+        self.init_matrix(envelopes)
         self.compute_envelopes_tree_dependencies()
 
         root_envelopes = [j for j in range(len(self.matrix)) if not self.matrix[:, j].any()]
