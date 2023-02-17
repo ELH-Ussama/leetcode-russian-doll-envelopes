@@ -1,15 +1,12 @@
 from typing import List
 
 
-class Envelope:
-    children: List['Envelope'] or None
+class Node:
+    children: List['Node'] = []
     computed_depth: int or None
 
-    def __init__(self, children: List['Envelope'] = None) -> None:
+    def __init__(self) -> None:
         self.computed_depth = None
-        if children is None:
-            children = []
-        self.children = children
 
     def depth(self) -> int:
         if self.computed_depth:
@@ -23,7 +20,7 @@ class Envelope:
 
 
 class Solution:
-    envelopes: List[Envelope] = None
+    envelopes: List[Node] = None
     envelopes_children: List[List[int]]
     n: int
 
@@ -37,7 +34,7 @@ class Solution:
         self.envelopes = []
 
         for i in range(self.n):
-            self.envelopes.append(Envelope())
+            self.envelopes.append(Node())
 
     def init_parent_children_map(self, envelopes: List[List[int]]) -> None:
         self.envelopes_children = [[] for _ in range(self.n)]
