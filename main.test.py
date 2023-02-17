@@ -57,7 +57,7 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(max_envelopes, 4)
 
     @timeout_decorator.timeout(1)
-    def test_Solution_maxEnvelopes_should_not_exceed_the_time_limit(self):
+    def test_Solution_maxEnvelopes_should_not_exceed_1s_time_limit_for_input_of_size_404(self):
         # GIVEN
         envelopes = big_list_of_envelopes
 
