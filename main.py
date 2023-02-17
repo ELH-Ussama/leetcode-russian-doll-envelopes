@@ -73,19 +73,17 @@ class Solution:
 
     def init_matrix(self):
         n = len(self.envelopes)
-        matrix = np.zeros((n, n), dtype=bool)
+        self.matrix = np.zeros((n, n), dtype=bool)
         for i in range(n):
             for j in range(n):
-                matrix[i, j] = self.envelopes[i].can_contain(self.envelopes[j])
-        c_matrix = np.copy(matrix)
+                self.matrix[i, j] = self.envelopes[i].can_contain(self.envelopes[j])
         for i in range(n):
             for j in range(n):
-                i_parent_of_j = matrix[i, j]
+                i_parent_of_j = self.matrix[i, j]
                 if i_parent_of_j:
-                    i_children = c_matrix[i]
-                    j_children = matrix[j]
-                    c_matrix[i] = np.logical_and(i_children, np.logical_not(j_children))
-        self.matrix = c_matrix
+                    i_children = self.matrix[i]
+                    j_children = self.matrix[j]
+                    self.matrix[i] = np.logical_and(i_children, np.logical_not(j_children))
 
     def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
         self.init_envelopes(envelopes)
