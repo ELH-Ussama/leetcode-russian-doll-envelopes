@@ -4,6 +4,7 @@ import timeout_decorator
 from main import Solution
 from test_cases.test_case_70_big_input import big_list_of_envelopes
 from test_cases.test_case_80_very_big_input import very_big_list_of_envelopes
+from test_cases.test_case_82_very_very_big_input import very_very_big_list_of_envelopes
 
 
 class TestSolution(unittest.TestCase):
@@ -69,7 +70,7 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(max_envelopes, 35)
 
     @timeout_decorator.timeout(3)
-    def test_Solution_maxEnvelopes_should_not_exceed_30s_time_limit_for_input_of_size_4886(self):
+    def test_Solution_maxEnvelopes_should_not_exceed_3s_time_limit_for_input_of_size_4886(self):
         # GIVEN
         envelopes = very_big_list_of_envelopes
 
@@ -78,6 +79,17 @@ class TestSolution(unittest.TestCase):
 
         # THEN
         self.assertEqual(max_envelopes, 133)
+
+    @timeout_decorator.timeout(3)
+    def test_Solution_maxEnvelopes_should_not_exceed_3s_time_limit_for_input_of_size_4573(self):
+        # GIVEN
+        envelopes = very_very_big_list_of_envelopes
+
+        # WHEN
+        max_envelopes = Solution().maxEnvelopes(envelopes)
+
+        # THEN
+        self.assertEqual(max_envelopes, 127)
 
 
 if __name__ == '__main__':
