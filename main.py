@@ -2,10 +2,26 @@ from typing import List, Dict
 
 
 class Envelope:
-    def __init__(self, identifier: int, width: int, height: int) -> None:
+    children: List['Envelope'] or None
+    computed_depth: int or None
+
+    def __init__(self, identifier: int, width: int, height: int, children: List['Envelope'] = None) -> None:
+        self.computed_depth = None
         self.id = identifier
         self.width = width
         self.height = height
+        if children is None:
+            children = []
+        self.children = children
+
+    def can_fit_in(self, other: 'Envelope') -> bool:
+        return self.width < other.width and self.height < other.height
+
+    def can_fit_in_at_least_one(self, others: List['Envelope']) -> bool:
+        for other in others:
+            if self.can_fit_in(other):
+                return True
+        return False
 
     def can_contain(self, other: 'Envelope') -> bool:
         return self.width > other.width and self.height > other.height
@@ -19,20 +35,16 @@ class Envelope:
 
         return can_contain
 
-
-class Node:
-    children: List['Node'] or None
-
-    def __init__(self, children=None) -> None:
-        if children is None:
-            children = []
-        self.children = children
-
     def depth(self) -> int:
+        if self.computed_depth:
+            return self.computed_depth
         if self.children is None or len(self.children) == 0:
-            return 1
-        children_depths = [child.depth() for child in self.children]
-        return 1 + max(children_depths)
+            self.computed_depth = 1
+            return self.computed_depth
+        root_children = [child for child in self.children if not child.can_fit_in_at_least_one(self.children)]
+        children_depths = [child.depth() for child in root_children]
+        self.computed_depth = 1 + max(children_depths)
+        return self.computed_depth
 
 
 class Solution:
@@ -59,20 +71,18 @@ class Solution:
         return envelope_can_contain_map
 
     def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
-        number_of_envelopes = len(envelopes)
-
         all_envelopes = self.init_envelopes(envelopes)
 
         envelope_can_contain_map = self.get_envelope_can_contain_map(all_envelopes)
 
-        nodes = [Node() for _ in range(number_of_envelopes)]
-
         for envelope_id in envelope_can_contain_map:
             can_contain = envelope_can_contain_map[envelope_id]
-            can_contain_nodes = [nodes[envelope_id] for envelope_id in can_contain]
-            nodes[envelope_id].children = can_contain_nodes
+            can_contain_nodes = [all_envelopes[envelope_id] for envelope_id in can_contain]
+            all_envelopes[envelope_id].children = can_contain_nodes
 
-        nodes_depths = [node.depth() for node in nodes]
+        root_envelopes = [e.id for e in all_envelopes if not e.can_fit_in_at_least_one(all_envelopes)]
+
+        nodes_depths = [all_envelopes[i].depth() for i in root_envelopes]
 
         return max(nodes_depths)
 

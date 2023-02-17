@@ -1,6 +1,8 @@
 import unittest
+import timeout_decorator
 
 from main import Solution
+from test_cases.test_case_70_big_input import big_list_of_envelopes
 
 
 class TestSolution(unittest.TestCase):
@@ -53,6 +55,17 @@ class TestSolution(unittest.TestCase):
 
         # THEN
         self.assertEqual(max_envelopes, 4)
+
+    @timeout_decorator.timeout(1)
+    def test_Solution_maxEnvelopes_should_not_exceed_the_time_limit(self):
+        # GIVEN
+        envelopes = big_list_of_envelopes
+
+        # WHEN
+        max_envelopes = Solution().maxEnvelopes(envelopes)
+
+        # THEN
+        self.assertEqual(max_envelopes, 35)
 
 
 if __name__ == '__main__':
