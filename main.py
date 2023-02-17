@@ -50,15 +50,6 @@ class Envelope:
 class Solution:
     envelopes: List[Envelope] = None
 
-    def init_envelopes(self, envelopes: List[List[int]]) -> None:
-        all_envelopes: List[Envelope] = []
-
-        for i in range(len(envelopes)):
-            envelope = envelopes[i]
-            all_envelopes.append(Envelope(i, envelope[0], envelope[1]))
-
-        self.envelopes = all_envelopes
-
     def get_envelope_can_contain_map(self) -> Dict[int, List[int]]:
         envelope_can_contain_map: Dict[int: List[int]] = {}
 
@@ -70,15 +61,25 @@ class Solution:
 
         return envelope_can_contain_map
 
-    def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
-        self.init_envelopes(envelopes)
-
+    def compute_envelopes_tree_dependencies(self):
         envelope_can_contain_map = self.get_envelope_can_contain_map()
-
         for envelope_id in envelope_can_contain_map:
             can_contain = envelope_can_contain_map[envelope_id]
             can_contain_nodes = [self.envelopes[envelope_id] for envelope_id in can_contain]
             self.envelopes[envelope_id].children = can_contain_nodes
+
+    def init_envelopes(self, envelopes: List[List[int]]) -> None:
+        all_envelopes: List[Envelope] = []
+
+        for i in range(len(envelopes)):
+            envelope = envelopes[i]
+            all_envelopes.append(Envelope(i, envelope[0], envelope[1]))
+
+        self.envelopes = all_envelopes
+        self.compute_envelopes_tree_dependencies()
+
+    def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
+        self.init_envelopes(envelopes)
 
         root_envelopes = [e.id for e in self.envelopes if not e.can_fit_in_at_least_one(self.envelopes)]
 
