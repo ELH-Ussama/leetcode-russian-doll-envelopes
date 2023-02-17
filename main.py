@@ -20,23 +20,23 @@ class Node:
 
 
 class Solution:
-    envelopes: List[Node] = None
+    graph: List[Node] = None
     envelopes_children: List[List[int]]
     n: int
 
-    def compute_envelopes_tree_dependencies(self):
+    def compute_envelopes_graph_dependencies(self):
         for envelope_id in range(self.n):
             can_contain = self.envelopes_children[envelope_id]
-            can_contain_nodes = [self.envelopes[envelope_id] for envelope_id in can_contain]
-            self.envelopes[envelope_id].children = can_contain_nodes
+            can_contain_nodes = [self.graph[envelope_id] for envelope_id in can_contain]
+            self.graph[envelope_id].children = can_contain_nodes
 
-    def init_envelopes(self) -> None:
-        self.envelopes = []
+    def init_graph(self) -> None:
+        self.graph = []
 
         for i in range(self.n):
-            self.envelopes.append(Node())
+            self.graph.append(Node())
 
-    def init_parent_children_map(self, envelopes: List[List[int]]) -> None:
+    def compute_envelopes_children(self, envelopes: List[List[int]]) -> None:
         self.envelopes_children = [[] for _ in range(self.n)]
         for i in range(self.n):
             wi, hi = envelopes[i]
@@ -52,11 +52,11 @@ class Solution:
 
     def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
         self.n = len(envelopes)
-        self.init_envelopes()
-        self.init_parent_children_map(envelopes)
-        self.compute_envelopes_tree_dependencies()
+        self.init_graph()
+        self.compute_envelopes_children(envelopes)
+        self.compute_envelopes_graph_dependencies()
 
-        nodes_depths = [self.envelopes[i].depth() for i in range(self.n)]
+        nodes_depths = [self.graph[i].depth() for i in range(self.n)]
 
         return max(nodes_depths)
 
