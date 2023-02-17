@@ -44,6 +44,16 @@ class TestSolution(unittest.TestCase):
         # THEN
         self.assertEqual(max_envelopes, 3)
 
+    def test_should_russian_doll_the_deepest_tree(self):
+        # GIVEN
+        envelopes = [[8, 3], [3, 20], [15, 5], [11, 2], [19, 6], [9, 18], [1, 19], [13, 3], [14, 20], [6, 7]]
+
+        # WHEN
+        max_envelopes = Solution().maxEnvelopes(envelopes)
+
+        # THEN
+        self.assertEqual(max_envelopes, 4)
+
 
 if __name__ == '__main__':
     unittest.main()
