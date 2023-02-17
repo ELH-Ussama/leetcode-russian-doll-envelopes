@@ -58,21 +58,26 @@ class Solution:
         self.envelopes = all_envelopes
 
     def init_matrix(self, envelopes: List[Tuple[int, ...]]):
+        self.matrix = self.get_init_matrix(envelopes)
+
+    @staticmethod
+    def get_init_matrix(envelopes):
         n = len(envelopes)
-        self.matrix = np.zeros((n, n), dtype=bool)
+        matrix = np.zeros((n, n), dtype=bool)
         for i in range(n):
             wi, hi = envelopes[i]
-            for j in range(i+1, n):
+            for j in range(i + 1, n):
                 wj, hj = envelopes[j]
-                self.matrix[i, j] = wi > wj and hi > hj
-                self.matrix[j, i] = wj > wi and hj > hi
+                matrix[i, j] = wi > wj and hi > hj
+                matrix[j, i] = wj > wi and hj > hi
         for i in range(n):
             for j in range(n):
-                i_parent_of_j = self.matrix[i, j]
+                i_parent_of_j = matrix[i, j]
                 if i_parent_of_j:
-                    i_children = self.matrix[i]
-                    j_children = self.matrix[j]
-                    self.matrix[i] = np.logical_and(i_children, np.logical_not(j_children))
+                    i_children = matrix[i]
+                    j_children = matrix[j]
+                    matrix[i] = np.logical_and(i_children, np.logical_not(j_children))
+        return matrix
 
     def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
         unique_envelopes = list(set(tuple(e) for e in envelopes))
