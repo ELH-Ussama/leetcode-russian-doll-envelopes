@@ -15,9 +15,6 @@ class Envelope:
             children = []
         self.children = children
 
-    def can_contain(self, other: 'Envelope') -> bool:
-        return self.width > other.width and self.height > other.height
-
     def depth(self, matrix: np.ndarray) -> int:
         if self.computed_depth:
             return self.computed_depth
